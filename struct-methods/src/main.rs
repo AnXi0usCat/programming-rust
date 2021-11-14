@@ -1,5 +1,7 @@
 pub mod queue;
+pub mod generic_queue;
 use crate::queue::Queue;
+use crate::generic_queue::GenericQueue;
 
 fn main() {
     let mut q = Queue::new();
@@ -28,4 +30,11 @@ fn main() {
     let (older, newer) = q.split();
     assert_eq!(older, vec!['1']);
     assert_eq!(newer, vec!['=']);
+
+    // generic queue
+    let mut q_gen = GenericQueue::<i32>::new();
+
+    q_gen.push(0);
+    q_gen.push(1);
+    assert_eq!(q_gen.pop(), Some(0));
 }
