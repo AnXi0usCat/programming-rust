@@ -19,6 +19,17 @@ impl TimeUnit {
 
     /// return the plural noun for this time unit
     fn singular(self) -> &'static str {
-        self.plural.trim_end_mathces('s')
+        self.plural().trim_end_matches('s')
+    }
+}
+
+/// Complicated enum with data
+enum RelationshipStatus {
+    Single,
+    InARelationship,
+    ItsComplicated(Option<String>),
+    ItsExtremelyComplicated {
+        car: String,
+        time: TimeUnit
     }
 }
