@@ -19,6 +19,10 @@ struct SimpleRouter {
     routes: HashMap<String, BoxedCallback>
 }
 
+struct FnPointerRouter {
+    routes: HashMap<String, fn(&Request) -> Response>
+}
+
 impl SimpleRouter {
     // Create new router
     fn new() -> Self {
@@ -29,6 +33,24 @@ impl SimpleRouter {
         where C: Fn(&Request) -> Response + 'static
     {
         self.routes.insert(url.to_string(), Box::new(callback));
+    }
+
+    fn handle_request(&self, request: &Request) -> Response {
+        match self.routes.get(&request.url) {
+            None => not_found_response(),
+            Some(callback) => callback(request)
+        }
+    }
+}
+
+impl FnPointerRouter {
+    // Create new router
+    fn new() -> Self {
+        FnPointerRouter {routes: HashMap::new()}
+    }
+    // Add a new route
+    fn add_route(&mut self, url: &str, callback: fn(&Request) -> Response) {
+        self.routes.insert(url.to_string(), callback);
     }
 
     fn handle_request(&self, request: &Request) -> Response {
