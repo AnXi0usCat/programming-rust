@@ -2,8 +2,8 @@ use std::thread;
 
 
 pub struct ThreadPool {
-    threads: Vec<thread::JoinHandle<()>>;
-};
+    threads: Vec<thread::JoinHandle<()>>
+}
 
 impl ThreadPool {
     /// Create a new ThreadPool.
