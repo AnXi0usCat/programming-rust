@@ -1,5 +1,6 @@
 use std::thread;
 use std::sync::{Arc, mpsc, Mutex};
+use core::option::Option::Some;
 
 type Job = Box<dyn FnOnce() -> () + Send + 'static>;
 
@@ -20,9 +21,7 @@ impl ThreadPool {
         assert!(size > 0);
 
         let mut workers = Vec::with_capacity(size);
-
         let (sender, receiver) = mpsc::channel();
-
         let receiver = Arc::new(Mutex::new(receiver));
 
         for i in 0..size {
@@ -41,9 +40,21 @@ impl ThreadPool {
     }
 }
 
+impl Drop for ThreadPool {
+
+    fn drop(&mut self) {
+        for worker in &mut self.workers {
+            if let Some(thread) = worker.thread.take() {
+                println!("Shutting down worker {}", worker.id);
+                thread.join().unwrap();
+            }
+        }
+    }
+}
+
 struct Worker {
     id: usize,
-    thread: thread::JoinHandle<Arc<Mutex<mpsc::Receiver<Job>>>>
+    thread: Option<thread::JoinHandle<()>>
 }
 
 impl Worker {
@@ -57,7 +68,7 @@ impl Worker {
             job();
         });
 
-        Worker{ id, thread }
+        Worker{ id, thread: Some(thread) }
     }
 
 }
