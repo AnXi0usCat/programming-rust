@@ -14,8 +14,8 @@ fn main() {
         let stream = stream.unwrap();
 
         pool.execute(|| handle_connection(stream));
-
     }
+    println!("Shutting down.");
 }
 
 fn handle_connection(mut stream: TcpStream) {
